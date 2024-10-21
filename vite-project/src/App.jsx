@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import './App.css'
 
-import { DndContext, closestCorners } from '@dnd-kit/core'
+import { DndContext, KeyboardSensor, PointerSensor, TouchSensor, closestCorners, useSensor, useSensors } from '@dnd-kit/core'
 import Column from './components/Column';
-import { arrayMove } from '@dnd-kit/sortable';
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 
 function App() {
 
   const [tasks, setTasks] = useState([
-    { id: 1, title: "Add tests to homepage" },
-    { id: 2, title: "Fix styling in about section" },
-    { id: 3, title: "Learn how to center a div" },
+    { id: 'bahfsdgrhagr', title: "Add tests to homepage" },
+    { id: 'fasdnfahsdf', title: "Fix styling in about section" },
+    { id: 'andfausd7as', title: "Learn how to center a div" },
   ]);
 
   const getTaskPos = id => tasks.findIndex(task => task.id === id)
@@ -28,11 +28,19 @@ function App() {
     });
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
   return (
     <>
       <div className='App'>
         <h1> My Tasks</h1>
-        <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
           <Column tasks={tasks}/>
         </DndContext>
       </div>
